@@ -21,7 +21,7 @@ jobs:
           java-version: '11'
 
       - name: Cache SonarCloud packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -31,12 +31,13 @@ jobs:
         run: |
           curl -sL https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip -o sonar-scanner.zip
           unzip sonar-scanner.zip -d ~/sonar-scanner
-          echo "SONAR_SCANNER_HOME=~/sonar-scanner/sonar-scanner-4.6.2.2472-linux" >> $GITHUB_ENV
-          echo "PATH=\$SONAR_SCANNER_HOME/bin:\$PATH" >> $GITHUB_ENV
+        shell: bash
 
       - name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_SCANNER_HOME: ~/sonar-scanner/sonar-scanner-4.6.2.2472-linux
+          PATH: ${{ runner.temp }}/sonar-scanner/sonar-scanner-4.6.2.2472-linux/bin:${{ env.PATH }}
         run: |
-          source $GITHUB_ENV
           sonar-scanner -Dsonar.organization=your-cayomol01 -Dsonar.projectKey=cayomol01_sonarcloud-analysis -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io
+        shell: bash
