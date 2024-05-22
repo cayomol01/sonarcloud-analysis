@@ -31,12 +31,16 @@ jobs:
         run: |
           curl -sL https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip -o build-wrapper-linux-x86.zip
           unzip build-wrapper-linux-x86.zip -d ~/sonar-scanner
-          export PATH="$PATH:~/sonar-scanner/build-wrapper-linux-x86"
+          curl -sL https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip -o sonar-scanner-cli.zip
+          unzip sonar-scanner-cli.zip -d ~/sonar-scanner
+          echo "export PATH=\$PATH:~/sonar-scanner/sonar-scanner-4.6.2.2472-linux/bin" >> $GITHUB_ENV
+
+      - name: Verify SonarCloud Scanner installation
+        run: |
+          sonar-scanner --version
 
       - name: SonarCloud Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          sonar-scanner -Dsonar.organization=cayomol01 
-          -Dsonar.projectKey=cayomol01_sonarcloud-analysis -Dsonar.sources=. 
-          -Dsonar.host.url=https://sonarcloud.io
+          sonar-scanner -Dsonar.organization=cayomol01 -Dsonar.projectKey=cayomol01_sonarcloud-analysis -Dsonar.sources=. -Dsonar.host.url=https://sonarcloud.io
